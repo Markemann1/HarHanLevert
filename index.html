@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Er han akademiker?</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes slowBounce {
+            0%, 20%, 53%, 80%, 100% { transform: translate3d(0,0,0); }
+            40%, 43% { transform: translate3d(0, -15px, 0); }
+            70% { transform: translate3d(0, -7px, 0); }
+            90% { transform: translate3d(0, -2px, 0); }
+        }
+        .slow-bounce { animation: slowBounce 3s ease-in-out infinite; }
+        .btn-hover:hover {
+            transform: scale(1.05);
+            transition: transform 0.2s;
+        }
+    </style>
+</head>
+<body>
+    <div id="app-container"></div>
+
+    <script>
+        // Set your graduation date here! Format: YYYY-MM-DDTHH:MM:SS
+      
+        //const GRADUATION_DATE = new Date('2020-01-01T00:00:00');
+        const GRADUATION_DATE = new Date('2025-11-01T23:59:59');
+        // ^^
+      
+        let currentPage = 'landing';
+        let timeLeft = {
+            weeks: 0,
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            totalMs: 0
+        };
+
+        function getTheme(totalMs) {
+            const days = totalMs / (1000 * 60 * 60 * 24);
+
+            if (totalMs <= 0) {
+                return {
+                    bg: 'bg-gradient-to-br from-yellow-400 via-pink-500 to-red-500 animate-pulse animate-spin',
+                    emoji: '⭐⭐⭐⭐⭐✨✨✨✨✨',
+                    message: '⭐ 🎓 HE DID IT 🎓 ⭐',
+                    textColor: 'text-white animate-bounce',
+                    shadow: 'drop-shadow-2xl',
+                    intensity: 'chaotic'
+                };
+            } else if (days < 1) {
+                return {
+                    bg: 'bg-gradient-to-br from-red-600 via-red-800 to-black animate-pulse',
+                    emoji: '⚡⚡⚡⚡⚡⚡⚠️⚠️⚠️⚠️⚠️⚠️',
+                    message: '🚨⚡🚨 KUN NOEN FÅ TIMER IGJEN!!! 🚨⚡🚨 HERREGUD, NÅ SKJER DET FOLKÆÆÆÆNS!', 
+                    textColor: 'text-red-100 animate-pulse',
+                    shadow: 'drop-shadow-2xl',
+                    intensity: 'extreme'
+                };
+            } else if (days <= 3) {
+                return {
+                    bg: 'bg-gradient-to-br from-red-500 via-red-700 to-red-900 animate-pulse',
+                    emoji: '⚡⚡⚡⚡⚡⚡⚠️⚠️⚠️⚠️⚠️⚠️',
+                    message: '🚨 ÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆ 🚨',
+                    textColor: 'text-red-100 animate-pulse',
+                    shadow: 'drop-shadow-2xl',
+                    intensity: 'extreme'
+                };
+            } else if (days <= 5) {
+                return {
+                    bg: 'bg-gradient-to-br from-orange-600 via-red-600 to-red-800 animate-pulse animate-bounce',
+                    emoji: '⚡⏰⏰⏰⏰⏰⏰⚠️⚠️⚠️⚠️',
+                    message: '🚨 HJEEEEEEEEEEEEEEEELP!!!!!! 🚨',
+                    textColor: 'text-orange-100 animate-pulse',
+                    shadow: 'drop-shadow-xl',
+                    intensity: 'high'
+                };
+            } else if (days <= 9) {
+                return {
+                    bg: 'bg-gradient-to-br from-yellow-500 via-orange-500 to-red-500 animate-pulse',
+                    emoji: '⚡⚡☕☕☕☕☕☕⏰⏰⏰⏰',
+                    message: 'Stressnivået stiger... ⚡',
+                    textColor: 'text-yellow-100',
+                    shadow: 'drop-shadow-lg',
+                    intensity: 'medium'
+                };
+            } else if (days <= 14) {
+                return {
+                    bg: 'bg-gradient-to-br from-green-400 via-yellow-400 to-orange-400',
+                    emoji: '☕☕☕☕☕☕☕☕⏰⏰⏰⏰',
+                    message: '😐 Kanskje jeg burde begynne snart... 😐',
+                    textColor: 'text-green-100',
+                    shadow: 'drop-shadow-md',
+                    intensity: 'light'
+                };
+            } else if (days <= 19) {
+                return {
+                    bg: 'bg-gradient-to-br from-blue-400 via-purple-400 to-indigo-500',
+                    emoji: '☕✏️✏️✏️✏️✏️✏️✏️✏️✏️',
+                    message: 'Fortsatt gooooood tid, slapp av ☕',
+                    textColor: 'text-blue-100',
+                    shadow: 'drop-shadow-md',
+                    intensity: 'calm'
+                };
+            } else {
+                return {
+                    bg: 'bg-gradient-to-br from-blue-300 via-blue-400 to-purple-400',
+                    emoji: '☕✏️✨️✏️✏✨️✏️✏️',
+                    message: '⭐ Noen som vil game eller ⭐',
+                    textColor: 'text-blue-100',
+                    shadow: 'drop-shadow-md',
+                    intensity: 'chill'
+                };
+            }
+        }
+
+        function getAnimationClass(intensity, index) {
+            switch(intensity) {
+                case 'chaotic':
+                    return `animate-bounce ${index % 2 === 0 ? 'animate-ping' : 'animate-pulse'} ${index % 3 === 0 ? 'animate-spin' : ''}`;
+                case 'extreme':
+                    return `animate-bounce ${index % 2 === 0 ? 'animate-ping' : 'animate-pulse'}`;
+                case 'high':
+                    return `animate-bounce ${index % 3 === 0 ? 'animate-pulse' : ''}`;
+                case 'medium':
+                    return `animate-bounce ${index % 4 === 0 ? 'animate-pulse' : ''}`;
+                case 'light':
+                    return `animate-bounce`;
+                case 'calm':
+                    return 'animate-bounce';
+                case 'chill':
+                    return 'slow-bounce';
+                default:
+                    return 'animate-bounce';
+            }
+        }
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = GRADUATION_DATE.getTime() - now;
+
+            if (distance > 0) {
+                const weeks = Math.floor(distance / (1000 * 60 * 60 * 24 * 7));
+                const days = Math.floor((distance % (1000 * 60 * 60 * 24 * 7)) / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                timeLeft = {
+                    weeks,
+                    days,
+                    hours,
+                    minutes,
+                    seconds,
+                    totalMs: distance
+                };
+            } else {
+                timeLeft = {
+                    weeks: 0,
+                    days: 0,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                    totalMs: 0
+                };
+            }
+
+            renderApp();
+        }
+
+        function showCountdown() {
+            currentPage = 'countdown';
+            renderApp();
+        }
+
+        function renderLanding() {
+            const now = new Date();
+            const oneYearAfterGraduation = new Date(GRADUATION_DATE.getTime() + (365 * 24 * 60 * 60 * 1000)); // 1 year buffer
+            const isStayTunedMode = GRADUATION_DATE < now && now > oneYearAfterGraduation; // Only "Stay Tuned" if more than 1 year past graduation
+            const isFinished = timeLeft.totalMs <= 0 && !isStayTunedMode;
+            
+            if (isFinished) {
+                return renderCelebration();
+            }
+            
+            return `
+                <div class="min-h-screen bg-black flex flex-col items-center justify-center text-white">
+                    <!-- Easter egg link in upper right -->
+                    <a href="https://hardovrefalt.no" target="_blank" 
+                       class="absolute top-4 right-4 text-sm text-gray-400 hover:text-white transition-colors underline">
+                        Har dovre falt da?
+                    </a>
+                    
+                    <div class="text-center">
+                        <h1 class="text-8xl md:text-9xl lg:text-[12rem] font-bold mb-8">
+                            NEI
+                        </h1>
+                        ${isStayTunedMode ? 
+                            `<div class="text-xl md:text-2xl font-light text-gray-400">
+                                Stay Tuned
+                            </div>` :
+                            `<button 
+                                onclick="showCountdown()" 
+                                class="text-xl md:text-2xl font-light underline hover:text-gray-300 btn-hover"
+                            >
+                                meeeeeeen
+                            </button>`
+                        }
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCelebration() {
+            const theme = getTheme(0); 
+            
+            let floatingEmojis = '';
+            const emojiArray = theme.emoji.split('');
+            
+            for (let i = 0; i < 35; i++) {
+                const emoji = emojiArray[i % emojiArray.length];
+                const animClass = getAnimationClass('chaotic', i);
+                const left = Math.random() * 90;
+                const top = Math.random() * 85;
+                const delay = i * 0.05;
+                const duration = 0.3 + (i % 4) * 0.1;
+                const rotation = i * 37;
+
+                floatingEmojis += `
+                    <div class="absolute text-3xl md:text-5xl lg:text-7xl ${animClass}" 
+                         style="left: ${left}%; top: ${top}%; animation-delay: ${delay}s; animation-duration: ${duration}s; transform: rotate(${rotation}deg);">
+                        ${emoji}
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="min-h-screen flex flex-col items-center justify-center ${theme.bg} transition-all duration-1000 animate-pulse">
+                    <!-- Easter egg link in upper right -->
+                    <a href="https://hardovrefalt.no" target="_blank" 
+                       class="absolute top-4 right-4 text-sm text-gray-400 hover:text-white transition-colors underline z-30">
+                        Har dovre falt?
+                    </a>
+                    
+                    <!-- Floating emojis -->
+                    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+                        ${floatingEmojis}
+                    </div>
+
+                    <!-- Main content -->
+                    <div class="relative z-10 text-center px-4">
+                        <h1 class="text-4xl md:text-6xl font-bold mb-8 ${theme.textColor} ${theme.shadow}">
+                            🎓
+                        </h1>
+                        
+                        <div class="text-2xl md:text-3xl font-semibold mb-12 ${theme.textColor} ${theme.shadow}">
+                            ${theme.message}
+                        </div>
+
+                        <div class="bg-white bg-opacity-20 rounded-2xl p-12 backdrop-blur-sm animate-pulse">
+                            <div class="text-6xl md:text-8xl font-bold text-white animate-bounce">
+                                🎓 JAAAAAAAAA! 🎓
+                            </div>
+                            <div class="text-2xl md:text-4xl font-bold text-white mt-6 animate-ping">
+                                Tid for å feire! ⭐
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCountdown() {
+            const theme = getTheme(timeLeft.totalMs);
+            const { weeks, days, hours, minutes, seconds, totalMs } = timeLeft;
+
+            let floatingEmojis = '';
+            const emojiArray = theme.emoji.split('');
+            
+            let numEmojis = 25;
+            if (theme.intensity === 'chaotic') numEmojis = 40;
+            else if (theme.intensity === 'extreme') numEmojis = 35;
+            else if (theme.intensity === 'high') numEmojis = 30;
+            
+            for (let i = 0; i < numEmojis; i++) {
+                const emoji = emojiArray[i % emojiArray.length];
+                const animClass = getAnimationClass(theme.intensity, i);
+                const left = Math.random() * 85;
+                const top = Math.random() * 80;
+                const delay = i * (theme.intensity === 'chaotic' ? 0.05 : 0.1);
+                const duration = theme.intensity === 'chaotic' ? (0.3 + (i % 4) * 0.1) : (1.5 + (i % 4) * 0.5);
+                const rotation = theme.intensity === 'chaotic' ? (i * 23) : 0;
+
+                floatingEmojis += `
+                    <div class="absolute text-2xl md:text-3xl lg:text-4xl ${animClass}" 
+                         style="left: ${left}%; top: ${top}%; animation-delay: ${delay}s; animation-duration: ${duration}s; transform: rotate(${rotation}deg);">
+                        ${emoji}
+                    </div>
+                `;
+            }
+
+            const targetDateFormatted = GRADUATION_DATE.toLocaleDateString('nb-NO', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            return `
+                <div class="min-h-screen flex flex-col items-center justify-center ${theme.bg} transition-all duration-1000 ${theme.intensity === 'chaotic' ? 'animate-pulse' : ''}">
+                    <!-- Easter egg link in upper right -->
+                    <a href="https://hardovrefalt.no" target="_blank" 
+                       class="absolute top-4 right-4 text-sm text-gray-400 hover:text-white transition-colors underline z-30">
+                        Har dovre falt?
+                    </a>
+                    
+                    <!-- Floating emojis -->
+                    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+                        ${floatingEmojis}
+                    </div>
+
+                    <!-- Back button -->
+                    <button 
+                        onclick="currentPage = 'landing'; renderApp();"
+                        class="absolute top-4 left-4 z-20 text-white bg-black bg-opacity-30 px-4 py-2 rounded-lg hover:bg-opacity-50 transition-all"
+                    >
+                        ← Har han levert?
+                    </button>
+
+                    <!-- Main content -->
+                    <div class="relative z-10 text-center px-4">
+                        <h1 class="text-4xl md:text-6xl font-bold mb-8 ${theme.textColor} ${theme.shadow}">
+                            🎓
+                        </h1>
+                        
+                        <div class="text-2xl md:text-3xl font-semibold mb-12 ${theme.textColor} ${theme.shadow}">
+                            ${theme.message}
+                        </div>
+
+                        <div class="bg-black bg-opacity-30 rounded-2xl p-8 backdrop-blur-sm border border-white border-opacity-20 ${theme.shadow} ${theme.intensity === 'chaotic' ? 'animate-ping' : theme.intensity === 'extreme' ? 'animate-pulse' : theme.intensity === 'high' ? 'animate-bounce' : ''}">
+                            <div class="text-3xl md:text-5xl lg:text-6xl font-mono font-bold ${theme.textColor} tracking-wider flex flex-wrap justify-center items-center gap-2 md:gap-4">
+                                <span class="flex items-center">
+                                    <span class="text-yellow-300">${weeks}</span>
+                                    <span class="text-sm md:text-lg ml-1">U</span>
+                                </span>
+                                <span class="text-white">,</span>
+                                
+                                <span class="flex items-center">
+                                    <span class="text-blue-300">${days}</span>
+                                    <span class="text-sm md:text-lg ml-1">D</span>
+                                </span>
+                                <span class="text-white">,</span>
+                                
+                                <span class="flex items-center">
+                                    <span class="text-green-300">${hours}</span>
+                                    <span class="text-sm md:text-lg ml-1">T</span>
+                                </span>
+                                <span class="text-white">,</span>
+                                
+                                <span class="flex items-center">
+                                    <span class="text-purple-300">${minutes}</span>
+                                    <span class="text-sm md:text-lg ml-1">M</span>
+                                </span>
+                                <span class="text-white">,</span>
+                                
+                                <span class="flex items-center">
+                                    <span class="text-red-300">${seconds}</span>
+                                    <span class="text-sm md:text-lg ml-1">S</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 text-lg md:text-xl ${theme.textColor} opacity-80">
+                            ${targetDateFormatted}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderApp() {
+            const container = document.getElementById('app-container');
+            
+            if (currentPage === 'landing') {
+                container.innerHTML = renderLanding();
+            } else {
+                container.innerHTML = renderCountdown();
+            }
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+        window.showCountdown = showCountdown;
+    </script>
+</body>
+</html>
