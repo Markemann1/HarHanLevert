@@ -26,7 +26,7 @@
         // Set your graduation date here! Format: YYYY-MM-DDTHH:MM:SS
       
         //const GRADUATION_DATE = new Date('2020-01-01T00:00:00');
-        const GRADUATION_DATE = new Date('2025-11-01T23:59:59');
+        const GRADUATION_DATE = new Date('2025-09-17T23:59:59');
         // ^^ Endre her ^^  
       
         let currentPage = 'landing';
@@ -69,7 +69,7 @@
                     shadow: 'drop-shadow-2xl',
                     intensity: 'extreme'
                 };
-            } else if (days <= 5) {
+            } else if (days <= 6) {
                 return {
                     bg: 'bg-gradient-to-br from-orange-600 via-red-600 to-red-800 animate-pulse animate-bounce',
                     emoji: '⚡⏰⏰⏰⏰⏰⏰⚠️⚠️⚠️⚠️',
@@ -78,7 +78,7 @@
                     shadow: 'drop-shadow-xl',
                     intensity: 'high'
                 };
-            } else if (days <= 9) {
+            } else if (days <= 10) {
                 return {
                     bg: 'bg-gradient-to-br from-yellow-500 via-orange-500 to-red-500 animate-pulse',
                     emoji: '⚡⚡☕☕☕☕☕☕⏰⏰⏰⏰',
@@ -109,7 +109,7 @@
                 return {
                     bg: 'bg-gradient-to-br from-blue-300 via-blue-400 to-purple-400',
                     emoji: '☕✏️✨️✏️✏✨️✏️✏️',
-                    message: '⭐ Noen som vil game eller ⭐',
+                    message: '⭐ Har all tid i verden, chill ⭐',
                     textColor: 'text-blue-100',
                     shadow: 'drop-shadow-md',
                     intensity: 'chill'
@@ -253,7 +253,7 @@
                     <!-- Main content -->
                     <div class="relative z-10 text-center px-4">
                         <h1 class="text-4xl md:text-6xl font-bold mb-8 ${theme.textColor} ${theme.shadow}">
-                            🎓 Han nærmer seg 🎓
+                            🎓🎓🎓🎓🎓🎓🎓🎓🎓🎓🎓
                         </h1>
                         
                         <div class="text-2xl md:text-3xl font-semibold mb-12 ${theme.textColor} ${theme.shadow}">
@@ -262,10 +262,10 @@
 
                         <div class="bg-white bg-opacity-20 rounded-2xl p-12 backdrop-blur-sm animate-pulse">
                             <div class="text-6xl md:text-8xl font-bold text-white animate-bounce">
-                                🎓 JAAAAAAAAA! 🎓
+                                🎓🎓🎓 JAAAAAAAAA! 🎓🎓🎓
                             </div>
                             <div class="text-2xl md:text-4xl font-bold text-white mt-6 animate-ping">
-                                ⭐⭐ LA DET SVINGE, LA DET ROCK'N'ROLL ⭐⭐
+                                ⭐🎓⭐ LA DET SVINGE, LA DET ROCK'N'ROLL ⭐🎓⭐
                             </div>
                         </div>
                     </div>
@@ -335,7 +335,7 @@
                     <!-- Main content -->
                     <div class="relative z-10 text-center px-4">
                         <h1 class="text-4xl md:text-6xl font-bold mb-8 ${theme.textColor} ${theme.shadow}">
-                            🎓
+                            🎓 Han nærmer seg 🎓
                         </h1>
                         
                         <div class="text-2xl md:text-3xl font-semibold mb-12 ${theme.textColor} ${theme.shadow}">
@@ -374,14 +374,16 @@
                                 </span>
                             </div>
                         </div>
+                        
 
-                        <div class="mt-8 text-lg md:text-xl ${theme.textColor} opacity-80">
-                            ${targetDateFormatted}
-                        </div>
+
                     </div>
                 </div>
             `;
-        }
+        } // Lim inn det under i mellomrommet mellom divsene for å vise sluttdatoen ^^
+                        //<div class="mt-8 text-lg md:text-xl ${theme.textColor} opacity-80">
+                            //${targetDateFormatted}
+                        //</div>
 
         function renderApp() {
             const container = document.getElementById('app-container');
